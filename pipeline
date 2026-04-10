@@ -1,0 +1,31 @@
+pipeline{
+    agent any
+    stages{
+        stage('checkoout_repo'){
+            steps{
+             git branch: 'main',
+             url: 'https://github.com/mihrasalim/finalproject.git'
+            }
+        }
+        stage('docker image build'){
+        steps{
+            sh 'docker image build -f dockerfile -t dockernode .'
+        }
+    }
+        stage('docker container run'){
+            steps{
+                sh 'docker run -d --name nodejs -P dockernode'
+            }
+        }
+        stage('kubernetes deployment'){
+            steps{
+                sh '''
+                   kubectl apply -f nodejs.yml
+                   kubectl get pods
+                   kubectl get deployment
+                   kubectl get svc
+                   '''
+            }
+        }
+            }
+        }
